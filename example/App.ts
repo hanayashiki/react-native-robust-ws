@@ -13,7 +13,6 @@ import React, {useEffect} from 'react';
 import RobustWs from 'react-native-robust-ws';
 
 export default function App() {
-
     useEffect(() => {
         let cnt = 0;
         console.log(RobustWs);

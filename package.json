@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "TODO",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "README.md",
     "android",
@@ -11,7 +12,7 @@
     "ios"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,8 +24,8 @@
     "react-native"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "Chenyu Wang",
+    "email": "wangchenyu2017@gmail.com"
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",
