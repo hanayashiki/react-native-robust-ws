@@ -10,19 +10,22 @@
 
 import React, {useEffect} from 'react';
 
-import RobustWs from 'react-native-robust-ws';
+import RobustWs from './react-native-robust-ws';
 
 export default function App() {
     useEffect(() => {
         let cnt = 0;
         console.log(RobustWs);
-        const ws = new RobustWs("ws://localhost:8765");
+        const ws = new RobustWs("ws://localhost:8765", {retryInterval: 250});
 
         const session = ws.openSession({
             onMessage: (m) => {
                 cnt++;
                 console.log(m);
             },
+            onClosed: () => {
+                console.log("closed")
+            }
         });
 
         session.send("1");

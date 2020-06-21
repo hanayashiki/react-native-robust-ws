@@ -237,6 +237,8 @@ class RobustWs<MessageDataType = string> {
                                     handlers.onClosed && handlers.onClosed();
                                     console.log("stopped cleanly");
                                     return;
+                                } else {
+                                    console.log("stopped not cleanly");
                                 }
                             }
 
