@@ -1,0 +1,53 @@
+{
+  "name": "react-native-robust-ws",
+  "title": "React Native Robust Ws",
+  "version": "1.0.0",
+  "description": "TODO",
+  "main": "dist/index.js",
+  "files": [
+    "README.md",
+    "android",
+    "index.ts",
+    "ios"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/github_account/react-native-robust-ws.git",
+    "baseUrl": "https://github.com/github_account/react-native-robust-ws"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": {
+    "name": "Your Name",
+    "email": "yourname@email.com"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-native": ">=0.60.0-rc.0 <1.0.x"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-typescript": "^7.10.1",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "react": "^16.9.0",
+    "react-native": "^0.61.5",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "ws": "^7.3.0"
+  },
+  "dependencies": {
+    "consumer-queue": "^1.0.1"
+  }
+}
