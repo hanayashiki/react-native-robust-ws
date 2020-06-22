@@ -7,7 +7,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "release": "cp react-native-robust-ws/* ../src/ && cd .. && yarn build"
+    "stage": "cp react-native-robust-ws/* ../src/ && cd .. && yarn build"
   },
   "dependencies": {
     "@types/jest": "^26.0.0",

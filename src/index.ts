@@ -14,12 +14,12 @@ export class RobustWsOptions {
 }
 
 export const defaultRobustWsOptions: RobustWsOptions = {
-    connectionTimeout: 5000,
+    connectionTimeout: 1000,
     pingData: "P",
     pongData: "P",
     pingTimout: 20 * 1000,
     maxRetries: 3,
-    retryInterval: 1000,
+    retryInterval: 250,
 };
 
 export class RobustWsError extends Error {
@@ -46,6 +46,7 @@ export class RobustWsClosed extends RobustWsError {
 export interface RobustWsSession {
     send: (message: string | ArrayBufferLike | Blob | ArrayBufferView) => void;
     close: (code?: number, reason?: string) => void;
+    connect: () => void;
     readyState: () => integer | undefined;
 }
 
@@ -99,6 +100,10 @@ class RobustWs<MessageDataType = string> {
 
     async _recv(): Promise<MessageDataType> {
         return new Promise<MessageDataType>((resolve, reject) => {
+
+            let pingReceived = 0;
+            let expectedPingReceived = 0;
+
             if (!this._ws) {
                 reject(new RobustWsInvalidState("Cannot recv message when WebSocket is not set up. "));
                 return;
@@ -119,6 +124,7 @@ class RobustWs<MessageDataType = string> {
                     cleanUp();
                     resolve(e.data);
                 } else {
+                    pingReceived += 1;
                     this._ws?.send(this.options.pongData!);
                 }
             };
@@ -129,8 +135,11 @@ class RobustWs<MessageDataType = string> {
             };
 
             const pingInterval = setInterval(() => {
-                cleanUp();
-                reject(new RobustWsPingTimeout);
+                expectedPingReceived += 1;
+                if (pingReceived < expectedPingReceived) {
+                    cleanUp();
+                    reject(new RobustWsPingTimeout);
+                }
             }, this.options.pingTimout);
 
             if (this._ws?.readyState !== WebSocket.OPEN) {
@@ -163,8 +172,9 @@ class RobustWs<MessageDataType = string> {
         handlers: {
             onMessage?: (data: MessageDataType) => void,
             onConnected?: () => void,
-            onClosed?: () => void
-        }): RobustWsSession {
+            onClosed?: () => void,
+            onReconnecting?: () => void,
+        } = {}): RobustWsSession {
         // Opens a reconnecting session.
 
         if (this._session) {
@@ -181,6 +191,10 @@ class RobustWs<MessageDataType = string> {
             },
             close: (...args) => {
                 taskQueue.push(() => this._close(...args));
+            },
+            connect: () => {
+                retrying = true;
+                numberRetries = 0;
             },
             readyState: () => this._ws?.readyState,
         };
@@ -217,6 +231,7 @@ class RobustWs<MessageDataType = string> {
                         if (retrying) {
                             await this._open();
                             console.log("connected");
+                            handlers.onConnected && handlers.onConnected();
                             numberRetries = 0;
 
                             await Promise.race([
@@ -225,18 +240,22 @@ class RobustWs<MessageDataType = string> {
                                 messageWorker(),      // Call handler on each received message
                             ]);
                         } else {
-
+                            await new Promise(resolve => setTimeout(resolve, 200));
                         }
 
                     } catch (e) {
                         console.log(e, e.constructor);
 
                         if (e instanceof RobustWsError) {
+
                             if (e instanceof RobustWsClosed) {
                                 if (e.closeEvent.wasClean) {
-                                    handlers.onClosed && handlers.onClosed();
                                     console.log("stopped cleanly");
+                                    handlers.onClosed && handlers.onClosed();
                                     return;
+                                } else {
+                                    handlers.onReconnecting && handlers.onReconnecting();
+                                    console.log("stopped not cleanly");
                                 }
                             }
 
